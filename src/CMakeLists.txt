@@ -1,5 +1,8 @@
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
 add_executable(async_cli main.cpp)
-add_library(async async.cpp 
+add_library(async SHARED
+                  async.cpp 
                   CommandProcessor.cpp 
                   CommandQueue.cpp 
                   ConsoleCommandWriter.cpp 
