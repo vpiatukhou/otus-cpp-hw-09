@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <thread>
 
-namespace Homework {
+namespace async {
 
 const std::string BEGIN_DYNAMIC_BLOCK_COMMAND = "{";
 const std::string END_DYNAMIC_BLOCK_COMMAND = "}";

@@ -1,6 +1,6 @@
 #include "BaseCommandWriter.h"
 
-namespace Homework {
+namespace async {
 
 const std::string BLOCK_PREFIX = "bulk: ";
 const std::string COMMAND_DELIMITER = ", ";

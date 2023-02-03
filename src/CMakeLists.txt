@@ -1,5 +1,10 @@
 add_executable(async_cli main.cpp)
-add_library(async CommandProcessor.cpp CommandQueue.cpp ConsoleCommandWriter.cpp BaseCommandWriter.cpp FileCommandWriter.cpp)
+add_library(async async.cpp 
+                  CommandProcessor.cpp 
+                  CommandQueue.cpp 
+                  ConsoleCommandWriter.cpp 
+                  BaseCommandWriter.cpp 
+                  FileCommandWriter.cpp)
 
 #rename the executable to "async"
 set_target_properties(async_cli PROPERTIES OUTPUT_NAME async)

@@ -7,7 +7,7 @@
 #include <vector>
 #include <memory>
 
-namespace Homework {
+namespace async {
 
 class CommandProcessor {
 

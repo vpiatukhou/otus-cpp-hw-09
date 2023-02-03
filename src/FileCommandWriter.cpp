@@ -4,18 +4,14 @@
 #include <fstream>
 #include <thread>
 
-namespace Homework {
+namespace async {
 
 const std::string FILENAME_PREFIX = "bulk";
 const std::string FILE_EXTENSION = ".log";
 const std::string FILENAME_SUFFIX_1 = "-t1";
 const std::string FILENAME_SUFFIX_2 = "-t2";
 
-void FileCommandWriter::onFlush(const std::vector<std::string>& commands) {
-    commandBlocks.push(commands);
-}
-
-void FileCommandWriter::run() {
+FileCommandWriter::FileCommandWriter() {
     auto executor = [this](std::string filenameSuffix) {
         std::vector<std::string> commandBlock;
         while (true) { //poll the queue in the infinite loop
@@ -43,6 +39,10 @@ void FileCommandWriter::run() {
 
     t1.detach();
     t2.detach();
+}
+
+void FileCommandWriter::onFlush(const std::vector<std::string>& commands) {
+    commandBlocks.push(commands);
 }
 
 };

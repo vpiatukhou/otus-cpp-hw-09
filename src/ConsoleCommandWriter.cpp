@@ -3,13 +3,9 @@
 #include <iostream>
 #include <thread>
 
-namespace Homework {
+namespace async {
 
-void ConsoleCommandWriter::onFlush(const std::vector<std::string>& commands) {
-    commandBlocks.push(commands);
-}
-
-void ConsoleCommandWriter::run() {
+ConsoleCommandWriter::ConsoleCommandWriter() {
     std::thread executor([this]() {
         std::vector<std::string> commandBlock;
         while (true) {
@@ -21,6 +17,10 @@ void ConsoleCommandWriter::run() {
     });
 
     executor.detach();
+}
+
+void ConsoleCommandWriter::onFlush(const std::vector<std::string>& commands) {
+    commandBlocks.push(commands);
 }
 
 };

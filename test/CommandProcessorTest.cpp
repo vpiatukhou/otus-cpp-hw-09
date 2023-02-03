@@ -2,7 +2,7 @@
 
 #include "gmock/gmock.h"
 
-using namespace Homework;
+using namespace async;
 using namespace std;
 using ::testing::_;
 

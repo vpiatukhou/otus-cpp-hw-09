@@ -3,7 +3,7 @@
 #include <queue>
 #include <mutex>
 
-namespace Homework {
+namespace async {
 
 class CommandQueue {
 private:
