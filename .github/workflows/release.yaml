@@ -15,7 +15,7 @@ jobs:
       - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DWITH_TESTS=TRUE
       - run: cmake --build .
       - run: ctest
-      - run: cmake . -DWITH_TESTS=FALSE
+      - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DWITH_TESTS=FALSE
       - run: cmake --build . --target package
       - name: Create Release
         id: create_release
