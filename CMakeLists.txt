@@ -2,16 +2,19 @@
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 
+option(WITH_TESTS FALSE CACHE)
+
 project(async VERSION ${PROJECT_VERSION})
 
 add_subdirectory(src)
-add_subdirectory(test)
 
-enable_testing()
-add_test(NAME all_test COMMAND async_test)
+if(${WITH_TESTS})
+    add_subdirectory(test)
+    enable_testing()
+    add_test(NAME all_test COMMAND async_test)
+endif()
