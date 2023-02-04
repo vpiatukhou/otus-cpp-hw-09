@@ -14,4 +14,4 @@ add_subdirectory(src)
 add_subdirectory(test)
 
 enable_testing()
-add_test(Name all_test COMMAND async_test)
+add_test(NAME all_test COMMAND async_test)
