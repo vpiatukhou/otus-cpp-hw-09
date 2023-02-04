@@ -1,6 +1,3 @@
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-
-add_executable(async_cli main.cpp)
 add_library(async SHARED
                   async.cpp 
                   CommandProcessor.cpp 
@@ -8,14 +5,16 @@ add_library(async SHARED
                   ConsoleCommandWriter.cpp 
                   BaseCommandWriter.cpp 
                   FileCommandWriter.cpp)
+add_executable(async_cli main.cpp)
 
 #rename the executable to "async"
-set_target_properties(async_cli PROPERTIES OUTPUT_NAME async)
+set_target_properties(async_cli PROPERTIES OUTPUT_NAME async PUBLIC_HEADER async.h)
 
-target_link_libraries(async_cli PRIVATE async)
+find_package(Threads REQUIRED)
+target_link_libraries(async_cli PRIVATE async Threads::Threads)
 
 #BEGIN release
-install(TARGETS async RUNTIME DESTINATION bin)
+install(TARGETS async_cli async)
 
 set(CPACK_GENERATOR DEB)
 

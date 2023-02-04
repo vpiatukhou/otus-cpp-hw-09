@@ -16,5 +16,3 @@ target_link_libraries(async_test async GTest::gtest GTest::gtest_main GTest::gmo
 
 include(GoogleTest)
 gtest_discover_tests(async_test)
-
-enable_testing()
