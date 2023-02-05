@@ -9,10 +9,12 @@
 
 namespace async {
 
-    std::vector<std::shared_ptr<FlushCommandListener>> flushListeners = { 
+    //the listeners are shared between all instances of CommandProcessors
+    std::vector<std::shared_ptr<FlushCommandListener>> flushListeners = {
         std::make_shared<ConsoleCommandWriter>(),
         std::make_shared<FileCommandWriter>() };
 
+    //there is a separate processor for an each connection
     std::unordered_map<handle_t, std::unique_ptr<CommandProcessor>> processors;
 
     handle_t connect(std::size_t blockSize) {
@@ -24,12 +26,13 @@ namespace async {
     }
 
     void receive(handle_t handle, const char* data, std::size_t dataSize) {
-        std::string block(data, dataSize);
-        processors[handle]->process(block);
+        std::string command(data, dataSize);
+        processors[handle]->process(command);
     }
 
     void disconnect(handle_t handle) {
+        //write remained commands and destroy the CommandProcessor
         processors[handle]->flush();
         processors.erase(handle);
     }
-};
+}

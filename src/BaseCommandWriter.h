@@ -8,9 +8,9 @@
 
 namespace async {
 
-class BaseCommandWriter : public FlushCommandListener {
-protected:
-    void writeToStream(std::ostream& ostream, const std::vector<std::string>& commands) const;
-};
+    class BaseCommandWriter : public FlushCommandListener {
+    protected:
+        void writeToStream(std::ostream& ostream, const CommandBlock& commands) const;
+    };
 
-};
+}

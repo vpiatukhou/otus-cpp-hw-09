@@ -2,20 +2,24 @@
 
 #include <chrono>
 #include <fstream>
+#include <mutex>
 #include <thread>
 
 namespace async {
 
-const std::string FILENAME_PREFIX = "bulk";
-const std::string FILE_EXTENSION = ".log";
-const std::string FILENAME_SUFFIX_1 = "-t1";
-const std::string FILENAME_SUFFIX_2 = "-t2";
+    const std::string FILENAME_PREFIX = "bulk";
+    const std::string FILE_EXTENSION = ".log";
+    const std::string FILENAME_SUFFIX_1 = "-t1";
+    const std::string FILENAME_SUFFIX_2 = "-t2";
 
-FileCommandWriter::FileCommandWriter() {
-    auto executor = [this](std::string filenameSuffix) {
-        std::vector<std::string> commandBlock;
-        while (true) { //poll the queue in the infinite loop
-            if (commandBlocks.pop(commandBlock)) { //if there is a new command block, write it to file
+    const unsigned short NUMBER_OF_THREADS = 2;
+
+    FileCommandWriter::FileCommandWriter() {
+        auto worker = [this](const std::string& filenameSuffix) {
+            CommandBlock commandBlock;
+            while (isContinue) {
+                commandBlocks.waitForData(commandBlock);
+
                 auto timeSinceEpoch = std::chrono::system_clock::now().time_since_epoch();
                 auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(timeSinceEpoch).count();
 
@@ -31,18 +35,30 @@ FileCommandWriter::FileCommandWriter() {
 
                 commandBlock.clear();
             }
-        }
-    };
 
-    std::thread t1(executor, FILENAME_SUFFIX_1);
-    std::thread t2(executor, FILENAME_SUFFIX_2);
+            ++numberOfFinishedThreads;
 
-    t1.detach();
-    t2.detach();
+            allWorkersDoneCondition.notify_all();
+        };
+
+        std::thread t1(worker, FILENAME_SUFFIX_1);
+        std::thread t2(worker, FILENAME_SUFFIX_2);
+
+        t1.detach();
+        t2.detach();
+    }
+
+    FileCommandWriter::~FileCommandWriter() {
+        isContinue = false; //break the loop in the threads
+
+        std::mutex destructorMutex;
+        std::unique_lock<std::mutex> lock(destructorMutex);
+        //wait until the threads process remained commands
+        allWorkersDoneCondition.wait(lock, [this] { return numberOfFinishedThreads == NUMBER_OF_THREADS; });
+    }
+
+    void FileCommandWriter::onFlush(const CommandBlock& commands) {
+        commandBlocks.push(commands);
+    }
+
 }
-
-void FileCommandWriter::onFlush(const std::vector<std::string>& commands) {
-    commandBlocks.push(commands);
-}
-
-};

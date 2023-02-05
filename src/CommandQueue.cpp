@@ -5,21 +5,31 @@
 
 namespace async {
 
-void CommandQueue::push(const std::vector<std::string>& value) {
-    std::lock_guard<std::mutex> lock(queueMutex);
-    queue.push(value);
-}
-
-bool CommandQueue::pop(std::vector<std::string>& out) {
-    std::lock_guard<std::mutex> lock(queueMutex);
-    if (queue.empty()) {
-        return false;
+    void CommandQueue::push(const CommandBlock& commandBlock) {
+        if (!commandBlock.empty()) {
+            {
+                std::lock_guard<std::mutex> lock(queueMutex);
+                queue.push(commandBlock);
+            }
+            queueNotEmptyCondition.notify_one();
+        }
     }
-    auto& block = queue.back();
-    out.reserve(out.size() + block.size());
-    std::move(std::begin(block), std::end(block), std::back_inserter(out));
-    queue.pop();
-    return true;
-}
 
-};
+    void CommandQueue::waitForData(CommandBlock& target) {
+        bool isRead = false;
+        while (!isRead) {
+            std::unique_lock<std::mutex> lock(queueMutex);
+            queueNotEmptyCondition.wait(lock, [this] { return !queue.empty(); });
+
+            auto& commandBlock = queue.back();
+            if (!commandBlock.empty()) {
+                target.reserve(target.size() + commandBlock.size());
+                std::move(std::begin(commandBlock), std::end(commandBlock), std::back_inserter(target));
+                queue.pop();
+
+                isRead = true;
+            }
+        }
+    }
+
+}
