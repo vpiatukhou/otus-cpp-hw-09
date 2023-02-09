@@ -1,10 +1,10 @@
 #pragma once
 
-#include "BaseCommandWriter.h"
+#include "AsyncCommandWriter.h"
 
 namespace async {
 
-    class FileCommandWriter : public BaseCommandWriter {
+    class FileCommandWriter : public AsyncCommandWriter {
     public:
         FileCommandWriter();
 

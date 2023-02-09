@@ -1,19 +1,13 @@
-#include "BaseCommandWriter.h"
+#include "AsyncCommandWriter.h"
 
 #include <thread>
 
 namespace async {
 
-    const std::string BaseCommandWriter::BLOCK_PREFIX = "bulk: ";
-    const std::string BaseCommandWriter::COMMAND_DELIMITER = ", ";
-
-    BaseCommandWriter::BaseCommandWriter(NumberOfThreads numberOfThreads_) : numberOfThreads(numberOfThreads_) {
+    AsyncCommandWriter::AsyncCommandWriter(NumberOfThreads numberOfThreads_) : numberOfThreads(numberOfThreads_) {
     }
 
-    BaseCommandWriter::~BaseCommandWriter() {
-    }
-
-    void BaseCommandWriter::start() {
+    void AsyncCommandWriter::start() {
         auto worker = [this](NumberOfThreads threadNumber) {
             CommandBlock block;
 
@@ -39,17 +33,12 @@ namespace async {
         };
 
         for (NumberOfThreads i = 0; i < numberOfThreads; ++i) {
-            std::thread t(worker, i);
-            t.detach();
+            std::thread newThread(worker, i);
+            newThread.detach();
         }
     }
 
-    bool BaseCommandWriter::isCommandQueueEmpty() {
-        std::lock_guard<std::mutex> lock(workerMutex);
-        return commandBlocks.empty();
-    }
-
-    void BaseCommandWriter::stop() {
+    void AsyncCommandWriter::stop() {
         isContinueProcessing = false;
         continueProcessing.notify_all();
 
@@ -58,16 +47,14 @@ namespace async {
         blockProcessed.wait(lock, [this] { return numberOfFinishedThreads == numberOfThreads; });
     }
 
-    void BaseCommandWriter::onFlush(const CommandBlock& commands) {
+    void AsyncCommandWriter::onFlush(const CommandBlock& commands) {
         std::lock_guard<std::mutex> lock(workerMutex);
         commandBlocks.push(commands);
     }
 
-    void BaseCommandWriter::writeToStream(std::ostream& ostream, const CommandBlock& commands) const {
-        ostream << BLOCK_PREFIX << commands[0];
-        for (std::size_t i = 1; i < commands.size(); ++i) {
-            ostream << COMMAND_DELIMITER << commands[i];
-        }
+    bool AsyncCommandWriter::isCommandQueueEmpty() {
+        std::lock_guard<std::mutex> lock(workerMutex);
+        return commandBlocks.empty();
     }
 
 }

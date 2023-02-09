@@ -1,4 +1,5 @@
 #include "FileCommandWriter.h"
+#include "Util.h"
 
 #include <chrono>
 #include <filesystem>
@@ -10,13 +11,13 @@ namespace async {
     const std::string FileCommandWriter::FILENAME_THREAD = "-th-";
     const std::string FileCommandWriter::FILE_EXTENSION = ".log";
 
-    FileCommandWriter::FileCommandWriter() : BaseCommandWriter(2) {
+    FileCommandWriter::FileCommandWriter() : AsyncCommandWriter(2) {
     }
 
     void FileCommandWriter::write(const CommandBlock& commands, NumberOfThreads threadNumber) {
         auto filename = createFilename(threadNumber);
         std::ofstream file(filename);
-        writeToStream(file, commands);
+        writeCommandsToStream(file, commands);
         file.flush();
         file.close();
     }

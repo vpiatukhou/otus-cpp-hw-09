@@ -2,29 +2,26 @@
 
 #include "FlushCommandListener.h"
 
-#include <ostream>
-#include <string>
-#include <vector>
-
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
 #include <queue>
+#include <string>
 
 namespace async {
 
     /**
-     * The base class for asynchronous command writers.
+     * The base class for an asynchronous command writer.
      *
      * Encapsulates thread management.
      */
-    class BaseCommandWriter : public FlushCommandListener {
+    class AsyncCommandWriter : public FlushCommandListener {
     public:
-        BaseCommandWriter(const BaseCommandWriter&) = delete;
-        BaseCommandWriter(BaseCommandWriter&&) = delete;
+        AsyncCommandWriter(const AsyncCommandWriter&) = delete;
+        AsyncCommandWriter(AsyncCommandWriter&&) = delete;
 
-        BaseCommandWriter& operator=(const BaseCommandWriter&) = delete;
-        BaseCommandWriter& operator=(BaseCommandWriter&&) = delete;
+        AsyncCommandWriter& operator=(const AsyncCommandWriter&) = delete;
+        AsyncCommandWriter& operator=(AsyncCommandWriter&&) = delete;
 
         /**
          * Starts threads.
@@ -47,8 +44,7 @@ namespace async {
     protected:
         using NumberOfThreads = unsigned int; //unsigned int has been chosen because it is returned by std::thread::hardware_concurrency()
 
-        BaseCommandWriter(NumberOfThreads numberOfThreads_);
-        virtual ~BaseCommandWriter();
+        AsyncCommandWriter(NumberOfThreads numberOfThreads_);
 
         /**
          * Writes the given command block.
@@ -57,19 +53,17 @@ namespace async {
          * @param threadNumber  - a number to identify the thread
          */
         virtual void write(const CommandBlock& commands, NumberOfThreads threadNumber) = 0;
-        void writeToStream(std::ostream& ostream, const CommandBlock& commands) const;
 
     private:
-        static const std::string BLOCK_PREFIX;
-        static const std::string COMMAND_DELIMITER;
-
         bool isCommandQueueEmpty();
 
         NumberOfThreads numberOfThreads;
         std::queue<CommandBlock> commandBlocks;
         std::mutex workerMutex;
+
         std::condition_variable continueProcessing;
         std::condition_variable blockProcessed;
+
         std::atomic<NumberOfThreads> numberOfFinishedThreads{0};
         std::atomic_bool isContinueProcessing{true};
     };

@@ -1,9 +1,10 @@
 add_library(async SHARED
                   async.cpp 
+                  AsyncCommandWriter.cpp
                   CommandProcessor.cpp 
                   ConsoleCommandWriter.cpp 
-                  BaseCommandWriter.cpp 
-                  FileCommandWriter.cpp)
+                  FileCommandWriter.cpp 
+                  Util.cpp)
 add_executable(async_cli main.cpp)
 
 #rename the executable to "async"

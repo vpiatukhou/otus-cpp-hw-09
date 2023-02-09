@@ -24,7 +24,7 @@ namespace async {
 
             //... and run the threads
             for (auto& listener : commandWriters) {
-                static_cast<BaseCommandWriter*>(listener.get())->start();
+                static_cast<AsyncCommandWriter*>(listener.get())->start();
             }
         }
 
@@ -53,7 +53,7 @@ namespace async {
         if (processors.empty()) { 
             //process remained commands, stop all threads and delete listeners
             for (auto& listener : commandWriters) {
-                static_cast<BaseCommandWriter*>(listener.get())->stop();
+                static_cast<AsyncCommandWriter*>(listener.get())->stop();
             }
             commandWriters.clear();
         }

@@ -1,14 +1,15 @@
 #include "ConsoleCommandWriter.h"
+#include "Util.h"
 
 #include <iostream>
 
 namespace async {
 
-    ConsoleCommandWriter::ConsoleCommandWriter() : BaseCommandWriter(1) {
+    ConsoleCommandWriter::ConsoleCommandWriter() : AsyncCommandWriter(1) {
     }
 
     void ConsoleCommandWriter::write(const CommandBlock& commands, NumberOfThreads threadNumber) {
-        writeToStream(std::cout, commands);
+        writeCommandsToStream(std::cout, commands);
         std::cout << std::endl;
     }
 }
