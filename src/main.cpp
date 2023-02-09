@@ -69,7 +69,6 @@ void testMultipleClientThreads() {
 
 int main(int argc, char* argv[]) {
     std::cout << "===\n=== Send commands from a single thread ===\n===\n\n" << std::endl;
-
     testSingleClientThread();
 
     std::cout << "\n===\n=== Send commands from multiple threads ===\n===\n\n" << std::endl;
