@@ -1,6 +1,13 @@
 ﻿#include "async.h"
 
-int main(int argc, char* argv[]) {
+#include <iostream>
+#include <string>
+#include <thread>
+
+/**
+ * All commands are sent from a single thread.
+ */
+void testSingleClientThread() {
     auto h1 = async::connect(3);
 
     async::receive(h1, "1-1", 3);
@@ -32,6 +39,41 @@ int main(int argc, char* argv[]) {
     async::receive(h3, "3-5", 3); //the end of the block: 3-5
 
     async::disconnect(h3);
+}
+
+/**
+ * A lot of commands are sent from multiple threads.
+ */
+void testMultipleClientThreads() {
+    const std::size_t numberOfCommandsPerThread = 1000;
+
+    auto worker = [numberOfCommandsPerThread](std::size_t threadNumber, std::size_t blockSize) {
+        auto handle = async::connect(blockSize);
+        for (std::size_t i = 0; i < numberOfCommandsPerThread; ++i) {
+            std::string command = std::to_string(threadNumber);
+            command += '-';
+            command += std::to_string(i);
+            async::receive(handle, command.data(), command.size());
+        }
+        async::disconnect(handle);
+    };
+
+    std::thread t1(worker, 0, 1);
+    std::thread t2(worker, 1, 3);
+    std::thread t3(worker, 2, 5);
+
+    t1.join();
+    t2.join();
+    t3.join();
+}
+
+int main(int argc, char* argv[]) {
+    std::cout << "===\n=== Send commands from a single thread ===\n===\n\n" << std::endl;
+
+    testSingleClientThread();
+
+    std::cout << "\n===\n=== Send commands from multiple threads ===\n===\n\n" << std::endl;
+    testMultipleClientThreads();
 
     return 0;
 }

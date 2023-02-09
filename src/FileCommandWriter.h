@@ -16,6 +16,9 @@ namespace async {
         static const std::string FILENAME_THREAD;
         static const std::string FILE_EXTENSION;
 
+        /**
+         * @return a filename in the format: <timespamp sec>-th-<thread number>[-<file number>].log
+         */
         std::string createFilename(NumberOfThreads threadNumber) const;
 
     };

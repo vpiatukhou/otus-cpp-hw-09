@@ -9,7 +9,7 @@ namespace async {
     }
 
     void ConsoleCommandWriter::write(const CommandBlock& commands, NumberOfThreads threadNumber) {
-        writeCommandsToStream(std::cout, commands);
+        writeCommandsToStream(commands, std::cout);
         std::cout << std::endl;
     }
 }

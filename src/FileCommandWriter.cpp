@@ -17,7 +17,7 @@ namespace async {
     void FileCommandWriter::write(const CommandBlock& commands, NumberOfThreads threadNumber) {
         auto filename = createFilename(threadNumber);
         std::ofstream file(filename);
-        writeCommandsToStream(file, commands);
+        writeCommandsToStream(commands, file);
         file.flush();
         file.close();
     }
