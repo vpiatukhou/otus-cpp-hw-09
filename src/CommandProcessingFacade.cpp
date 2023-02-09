@@ -1,4 +1,3 @@
-#include "async.h"
 #include "CommandProcessingFacade.h"
 #include "ConsoleCommandWriter.h"
 #include "FileCommandWriter.h"
