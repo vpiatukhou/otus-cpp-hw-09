@@ -1,7 +1,6 @@
 add_library(async SHARED
                   async.cpp 
                   CommandProcessor.cpp 
-                  CommandQueue.cpp 
                   ConsoleCommandWriter.cpp 
                   BaseCommandWriter.cpp 
                   FileCommandWriter.cpp)

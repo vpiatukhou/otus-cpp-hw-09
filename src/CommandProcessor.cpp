@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <thread>
+#include <iostream>
 
 namespace async {
 
@@ -20,12 +21,10 @@ namespace async {
         if (command == BEGIN_DYNAMIC_BLOCK_COMMAND) {
             flush();
             ++openedDynamicBlockCounter;
-        }
-        else if (command == END_DYNAMIC_BLOCK_COMMAND) {
+        } else if (command == END_DYNAMIC_BLOCK_COMMAND) {
             --openedDynamicBlockCounter;
             flush();
-        }
-        else {
+        } else {
             commandBlock.push_back(command);
             if (commandBlock.size() == blockSize) {
                 flush();
