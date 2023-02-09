@@ -29,27 +29,35 @@ namespace async {
         void start();
 
         /**
-         * Waits until remained command blocks have been written and stops the threads.
+         * Waits until remaining command blocks are written and stops all threads.
          *
          * ATTENTION: it is not guaranteed that the threads will be stopped immidiately.
          *
-         * They may be stopped in some time after the method returns control.
+         * They may be stopped in some time since the method returns control.
          *
-         * It is just guaranteed, that the threads will release the mutex and finish data processing.
+         * It is just guaranteed, that the mutex will be released and all commands will be processed.
          */
         void stop();
 
+        /**
+         * Puts the given block of commands to the queue.
+         */
         void onFlush(const CommandBlock& commands) override;
 
     protected:
         using NumberOfThreads = unsigned int; //unsigned int has been chosen because it is returned by std::thread::hardware_concurrency()
 
+        /**
+         * The constructor.
+         *
+         * @param numberOfThreads_ - a number of threads which will be created.
+         */
         AsyncCommandWriter(NumberOfThreads numberOfThreads_);
 
         /**
-         * Writes the given command block.
+         * Writes the given block of commands.
          *
-         * @param commands      - the command block which will be written
+         * @param commands      - the block of commands
          * @param threadNumber  - a number to identify the thread
          */
         virtual void write(const CommandBlock& commands, NumberOfThreads threadNumber) = 0;
