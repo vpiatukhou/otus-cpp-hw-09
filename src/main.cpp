@@ -1,11 +1,8 @@
 ﻿#include "async.h"
 
-#include <algorithm>
 #include <iostream>
 #include <string>
 #include <thread>
-#include <filesystem>
-#include <fstream>
 
 /**
  * All commands are sent from a single thread.
