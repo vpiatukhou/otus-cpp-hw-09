@@ -1,4 +1,4 @@
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) #TODO can we avoid this?
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 add_executable(async_test CommandProcessorTest.cpp)
 
