@@ -17,7 +17,6 @@ namespace async {
                 {
                     std::unique_lock<std::mutex> lock(workerMutex);
                     continueProcessing.wait(lock, hasCommandsOrStopThread);
-
                     if (!commandBlocks.empty()) {
                         block = std::move(commandBlocks.front());
                         commandBlocks.pop();
@@ -48,8 +47,13 @@ namespace async {
     }
 
     void AsyncCommandWriter::onFlush(const CommandBlock& commands) {
-        std::lock_guard<std::mutex> lock(workerMutex);
-        commandBlocks.push(commands);
+        {
+            //this lock should be released before calling notify_one()
+            //Please see https://en.cppreference.com/w/cpp/thread/condition_variable/notify_one for more details
+            std::lock_guard<std::mutex> lock(workerMutex);
+            commandBlocks.push(commands);
+        }
+        continueProcessing.notify_one();
     }
 
     bool AsyncCommandWriter::isCommandQueueEmpty() {
