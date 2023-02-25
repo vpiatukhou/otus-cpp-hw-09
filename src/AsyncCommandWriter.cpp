@@ -9,11 +9,10 @@ namespace async {
 
     void AsyncCommandWriter::start() {
         auto worker = [this](NumberOfThreads threadNumber) {
-            CommandBlock block;
-
             auto hasCommandsOrStopThread = [this] { return !commandBlocks.empty() || !isContinueProcessing; };
 
             while (isContinueProcessing || !isCommandQueueEmpty()) {
+                CommandBlock block;
                 {
                     std::unique_lock<std::mutex> lock(workerMutex);
                     continueProcessing.wait(lock, hasCommandsOrStopThread);
